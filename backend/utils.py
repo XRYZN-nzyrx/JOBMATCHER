@@ -65,17 +65,17 @@ Return only JSON. No markdown, no explanation, no example.
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
         raw_response = response.text.strip()
-
         print("📤 Gemini raw response:", repr(raw_response))
 
-        # Improved Markdown cleanup
+        # Clean Markdown wrappers
         cleaned = raw_response.replace("```json", "").replace("```", "").strip()
 
-        # Smart apostrophe sanitization inside double-quoted strings
-        cleaned = re.sub(r'\"([^"]*?)\'([^"]*?)\"', r'"\1\u2019\2"', cleaned)
+        # Remove invalid escape sequences
+        cleaned = re.sub(r'\\(?![nrt"])', '', cleaned)
 
-        # Final cleanup to enforce JSON compliance
-        cleaned = cleaned.replace("'", '"')
+        # Replace smart quotes or apostrophes if needed
+        cleaned = cleaned.replace("’", "'")
+
         print("🧼 Cleaned response:", repr(cleaned))
 
         parsed = json.loads(cleaned)

@@ -16,41 +16,41 @@ async def analyze_profile(
     desired_jobs: str = Form(""),
     file: UploadFile = File(None)
 ):
-    text_data = skills.strip()
+    extracted = ""
     file_used = False
 
+    # Handle file upload and extraction
     if file:
         filename = secure_filename(file.filename)
         file_path = os.path.join(UPLOAD_DIR, filename)
 
-        # Save uploaded file temporarily
-        with open(file_path, "wb") as f:
-            f.write(await file.read())
-
-        # Extract text
-        extracted = extract_text_from_file(file_path)
-
-        # Delete file after use
         try:
-            os.remove(file_path)
-        except Exception as e:
-            print(f"Warning: Could not delete uploaded file: {e}")
+            with open(file_path, "wb") as f:
+                f.write(await file.read())
+
+            extracted = extract_text_from_file(file_path)
+
+        finally:
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                print(f"⚠️ Warning: Could not delete uploaded file: {e}")
 
         if extracted.strip():
-            text_data += f"\n{extracted.strip()}"
             file_used = True
 
-    # Include desired job info if provided
-    if desired_jobs.strip():
-        text_data += f"\nDesired Jobs: {desired_jobs.strip()}"
-
-    # Final check before sending to Gemini
-    if not text_data.strip():
+    # Validate input before proceeding
+    if not skills.strip() and not extracted.strip() and not desired_jobs.strip():
         return JSONResponse(content={"error": "No valid input provided."}, status_code=400)
 
-    # Analyze with Gemini
-    result = analyze_profile_with_gemini(text_data)
+    # Analyze profile with structured input
+    result = analyze_profile_with_gemini(
+        skills.strip(),
+        desired_jobs.strip(),
+        extracted.strip()
+    )
 
+    # Return result or error
     if result and isinstance(result, dict) and "error" not in result:
         result["used_cv"] = file_used
         return JSONResponse(content=result)
