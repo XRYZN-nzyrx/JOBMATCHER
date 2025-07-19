@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 
-from backend.match import router as match_router
+from match import router as match_router
 
 app = FastAPI()
 
@@ -18,9 +18,17 @@ app.add_middleware(
 
 app.include_router(match_router)
 
-# Serve React build
-app.mount("/static", StaticFiles(directory="frontend/build/static"), name="static")
+# Updated paths to match your actual folder structure
+app.mount("/static", StaticFiles(directory="jobmatcher-frontend/build/static"), name="static")
 
 @app.get("/")
 def serve_react():
-    return FileResponse("frontend/build/index.html")
+    return FileResponse("jobmatcher-frontend/build/index.html")
+
+# Catch-all route to serve React app for client-side routing
+@app.get("/{full_path:path}")
+def serve_react_app(full_path: str):
+    # Don't serve React for API routes
+    if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("openapi.json"):
+        return {"error": "Not found"}
+    return FileResponse("jobmatcher-frontend/build/index.html")
