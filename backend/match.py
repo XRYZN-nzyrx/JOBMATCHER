@@ -1,6 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, Form
 from fastapi.responses import JSONResponse
-from utils import extract_text_from_file, analyze_profile_with_gemini
+from backend.utils import extract_text_from_file, analyze_profile_with_gemini  # Fixed import
 import os
 from werkzeug.utils import secure_filename
 

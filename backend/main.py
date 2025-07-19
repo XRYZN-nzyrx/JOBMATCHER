@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 
+# Updated import - add 'backend.' prefix back
 from backend.match import router as match_router
 
 app = FastAPI()
