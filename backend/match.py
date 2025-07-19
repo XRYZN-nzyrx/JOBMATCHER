@@ -34,7 +34,7 @@ async def analyze_profile(
             try:
                 os.remove(file_path)
             except Exception as e:
-                print(f"⚠️ Warning: Could not delete uploaded file: {e}")
+                print(f"Warning: Could not delete uploaded file: {e}")
 
         if extracted.strip():
             file_used = True
@@ -44,7 +44,7 @@ async def analyze_profile(
         return JSONResponse(content={"error": "No valid input provided."}, status_code=400)
 
     # Analyze profile with structured input
-    print("🚀 Gemini input:", skills.strip(), desired_jobs.strip(), extracted.strip())
+    print("Gemini input:", skills.strip(), desired_jobs.strip(), extracted.strip())
     result = analyze_profile_with_gemini(
         skills.strip(),
         desired_jobs.strip(),

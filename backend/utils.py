@@ -13,9 +13,9 @@ load_dotenv()
 
 GOOGLE_GENAI_API_KEY = os.getenv("GOOGLE_API_KEY", "").strip()
 if not GOOGLE_GENAI_API_KEY:
-    print("⚠️ GOOGLE_API_KEY is missing. Gemini features will fail.")
+    print(" GOOGLE_API_KEY is missing. Gemini features will fail.")
 else:
-    print(f"✅ GOOGLE_API_KEY loaded. Length: {len(GOOGLE_GENAI_API_KEY)}")
+    print(f" GOOGLE_API_KEY loaded. Length: {len(GOOGLE_GENAI_API_KEY)}")
 
 # Configure Gemini API
 genai.configure(api_key=GOOGLE_GENAI_API_KEY)
@@ -36,7 +36,7 @@ def extract_text_from_file(path):
             print(f"Unsupported file type: {ext}")
             return ""
     except Exception as e:
-        print(f"🛑 Error while extracting text from {ext} file: {e}")
+        print(f"Error while extracting text from {ext} file: {e}")
         return ""
 
 def analyze_profile_with_gemini(skills="", desired_jobs="", extracted_text=""):
@@ -75,7 +75,7 @@ Return only JSON. No markdown, no explanation, no example.
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
         raw_response = response.text.strip()
-        print("📤 Gemini raw response:", repr(raw_response))
+        print(" Gemini raw response:", repr(raw_response))
 
         # Strip markdown wrapper
         cleaned = raw_response.replace("```json", "").replace("```", "").strip()
@@ -86,7 +86,7 @@ Return only JSON. No markdown, no explanation, no example.
         # Normalize curly apostrophes if needed
         cleaned = cleaned.replace("’", "'")
 
-        print("🧼 Cleaned response:", repr(cleaned))
+        print(" Cleaned response:", repr(cleaned))
 
         parsed = json.loads(cleaned)
 
@@ -109,7 +109,7 @@ Return only JSON. No markdown, no explanation, no example.
         return {key: parsed.get(key, default) for key, default in default_result.items()}
 
     except json.JSONDecodeError as e:
-        print("🚫 JSON parsing failed:", str(e))
+        print(" JSON parsing failed:", str(e))
         return {
             "error": "Gemini returned invalid JSON format.",
             "raw_response": raw_response,
@@ -117,7 +117,7 @@ Return only JSON. No markdown, no explanation, no example.
         }
 
     except Exception as e:
-        print("🔥 Gemini call crashed:", str(e))
+        print(" Gemini call crashed:", str(e))
         return {
             "error": f"Gemini processing error: {str(e)}"
         }
