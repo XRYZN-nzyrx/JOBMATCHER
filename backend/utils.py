@@ -39,7 +39,17 @@ def extract_text_from_file(path):
         print(f"🛑 Error while extracting text from {ext} file: {e}")
         return ""
 
-def analyze_profile_with_gemini(profile_text):
+def analyze_profile_with_gemini(skills="", desired_jobs="", extracted_text=""):
+    profile_text = f"""Skills:
+{skills.strip()}
+
+Desired Jobs:
+{desired_jobs.strip()}
+
+Resume Extracted Content:
+{extracted_text.strip()}
+"""
+
     prompt = f"""
 You are an expert career analyst and job readiness evaluator. As per the latest trends in 2025 and beyond, analyze the following user profile to identify skills, gaps, and career recommendations.
 
