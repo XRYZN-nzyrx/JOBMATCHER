@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
@@ -10,7 +11,10 @@ load_dotenv()
 from backend.match import router as match_router
 
 app = FastAPI()
-
+origins = [
+    "https://jobmatcher-k9uh.onrender.com",
+    "http://localhost:3000",  # Optional for dev
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
