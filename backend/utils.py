@@ -39,7 +39,18 @@ def extract_text_from_file(path):
         print(f"🛑 Error while extracting text from {ext} file: {e}")
         return ""
 
-def analyze_profile_with_gemini(profile_text):
+def analyze_profile_with_gemini(skills="", desired_jobs="", extracted_text=""):
+    # Structure input clearly for Gemini
+    profile_text = f"""Skills:
+{skills.strip()}
+
+Desired Jobs:
+{desired_jobs.strip()}
+
+Resume Extracted Content:
+{extracted_text.strip()}
+"""
+
     prompt = f"""
 You are an expert career analyst and job readiness evaluator. As per the latest trends in 2025 and beyond, analyze the following user profile to identify skills, gaps, and career recommendations.
 
@@ -61,6 +72,7 @@ Return a valid JSON object with the following fields:
 13. "recommended_courses" (format: [{{"missing_skill": ..., "courses": [...]}}])
 Return only JSON. No markdown, no explanation, no example.
 """
+
     try:
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
@@ -68,13 +80,8 @@ Return only JSON. No markdown, no explanation, no example.
 
         print("📤 Gemini raw response:", repr(raw_response))
 
-        # Improved Markdown cleanup
         cleaned = raw_response.replace("```json", "").replace("```", "").strip()
-
-        # Smart apostrophe sanitization inside double-quoted strings
         cleaned = re.sub(r'\"([^"]*?)\'([^"]*?)\"', r'"\1\u2019\2"', cleaned)
-
-        # Final cleanup to enforce JSON compliance
         cleaned = cleaned.replace("'", '"')
         print("🧼 Cleaned response:", repr(cleaned))
 
