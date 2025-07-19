@@ -50,7 +50,7 @@ function App() {
     if (file) formData.append("file", file);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/match-jobs", formData, {
+      const response = await axios.post("/match-jobs", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         timeout: 30000,
       });
