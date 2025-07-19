@@ -10,12 +10,12 @@ import re
 
 # Load environment variables
 load_dotenv()
-GOOGLE_GENAI_API_KEY = os.getenv("GOOGLE_API_KEY")
 
+GOOGLE_GENAI_API_KEY = os.getenv("GOOGLE_API_KEY", "").strip()
 if not GOOGLE_GENAI_API_KEY:
-    raise EnvironmentError(" GOOGLE_API_KEY is not set in environment variables.")
+    raise EnvironmentError("GOOGLE_API_KEY is missing in environment variables.")
 
-# Configure Gemini
+# Configure Gemini API
 genai.configure(api_key=GOOGLE_GENAI_API_KEY)
 
 def extract_text_from_file(path):
@@ -33,7 +33,7 @@ def extract_text_from_file(path):
         else:
             return ""
     except Exception as e:
-        return f" Error while extracting text from {ext} file: {str(e)}"
+        return f"Error while extracting text from {ext} file: {str(e)}"
 
 def analyze_profile_with_gemini(profile_text):
     prompt = f"""
@@ -57,18 +57,20 @@ Return a valid JSON object with the following fields:
 13. "recommended_courses" (format: [{{"missing_skill": ..., "courses": [...]}}])
 Return only JSON. No markdown, no explanation, no example.
 """
-
     try:
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
         raw_response = response.text.strip()
 
-        # Sanitize any unwanted formatting (e.g., ```json ... ```)
-        cleaned = re.sub(r"^```json|```$", "", raw_response, flags=re.IGNORECASE).strip()
+        # Remove formatting issues (e.g., markdown code blocks)
+        cleaned = re.sub(r"^```(json)?|```$", "", raw_response, flags=re.IGNORECASE).strip()
+
+        # Force double quote compliance for JSON
+        cleaned = cleaned.replace("'", '"')
 
         parsed = json.loads(cleaned)
 
-        # Fallback-safe JSON response
+        # Fallback-safe JSON response template
         default_result = {
             "current_skills": [],
             "missing_skills": [],
@@ -85,14 +87,16 @@ Return only JSON. No markdown, no explanation, no example.
             "recommended_courses": []
         }
 
-        final_result = {key: parsed.get(key, default) for key, default in default_result.items()}
-        return final_result
+        return {key: parsed.get(key, default) for key, default in default_result.items()}
 
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
         return {
-            "error": " Gemini returned invalid JSON format.",
-            "raw_response": raw_response
+            "error": "Gemini returned invalid JSON format.",
+            "raw_response": raw_response,
+            "exception": str(e)
         }
 
     except Exception as e:
-        return {"error": f" Gemini processing error: {str(e)}"}
+        return {
+            "error": f"Gemini processing error: {str(e)}"
+        }
