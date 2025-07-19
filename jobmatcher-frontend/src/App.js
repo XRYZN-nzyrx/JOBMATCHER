@@ -52,7 +52,7 @@ function App() {
     try {
       const BACKEND_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
-      const response = await axios.post("${BACKEND_URL}/match-jobs", formData, {
+      const response = await axios.post(`${BACKEND_URL}/match-jobs`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         timeout: 30000,
       });
