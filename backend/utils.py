@@ -67,13 +67,13 @@ Return only JSON. No markdown, no explanation, no example.
         raw_response = response.text.strip()
         print("📤 Gemini raw response:", repr(raw_response))
 
-        # Clean Markdown wrappers
+        # Strip markdown wrapper
         cleaned = raw_response.replace("```json", "").replace("```", "").strip()
 
-        # Remove invalid escape sequences
-        cleaned = re.sub(r'\\(?![nrt"])', '', cleaned)
+        # Remove malformed backslashes (prevents \u crash)
+        cleaned = re.sub(r'\\(?!["\\/bfnrtu])', '', cleaned)
 
-        # Replace smart quotes or apostrophes if needed
+        # Normalize curly apostrophes if needed
         cleaned = cleaned.replace("’", "'")
 
         print("🧼 Cleaned response:", repr(cleaned))
