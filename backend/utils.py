@@ -51,7 +51,7 @@ Resume Extracted Content:
 """
 
     prompt = f"""
-You are an expert career analyst and job readiness evaluator. As per the latest trends in 2025 and beyond, analyze the following user profile to identify skills, gaps, and career recommendations.
+You are an expert career analyst and job readiness evaluator. As per the latest trends in 2025 and beyond, analyze the following user profile to identify skills, gaps, and career recommendations.The percentage match should be based on the skills and job roles provided,and the analysis should be comprehensive and actionable.
 
 \"\"\"{profile_text}\"\"\"
 
