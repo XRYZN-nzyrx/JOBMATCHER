@@ -66,13 +66,18 @@ Return only JSON. No markdown, no explanation, no example.
         response = model.generate_content(prompt)
         raw_response = response.text.strip()
 
-        print("📤 Gemini raw response:", repr(raw_response))  # Debug log
+        print("📤 Gemini raw response:", repr(raw_response))
 
         # Improved Markdown cleanup
         cleaned = raw_response.replace("```json", "").replace("```", "").strip()
-        print("🧼 Cleaned response:", repr(cleaned))  # Confirm it's JSON-ready
 
-        # Parse JSON safely
+        # Smart apostrophe sanitization inside double-quoted strings
+        cleaned = re.sub(r'\"([^"]*?)\'([^"]*?)\"', r'"\1\u2019\2"', cleaned)
+
+        # Final cleanup to enforce JSON compliance
+        cleaned = cleaned.replace("'", '"')
+        print("🧼 Cleaned response:", repr(cleaned))
+
         parsed = json.loads(cleaned)
 
         default_result = {
