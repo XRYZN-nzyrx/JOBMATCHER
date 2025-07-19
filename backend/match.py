@@ -49,7 +49,7 @@ async def analyze_profile(
         return JSONResponse(content={"error": "No valid input provided."}, status_code=400)
 
     # Analyze with Gemini
-    result =  analyze_profile_with_gemini(skills.strip(), desired_jobs.strip(), extracted.strip() if file_used else "")
+    result = analyze_profile_with_gemini(text_data)
 
     if result and isinstance(result, dict) and "error" not in result:
         result["used_cv"] = file_used

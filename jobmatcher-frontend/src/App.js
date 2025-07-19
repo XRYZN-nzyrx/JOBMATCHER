@@ -50,6 +50,8 @@ function App() {
     if (file) formData.append("file", file);
 
     try {
+      
+
       const response = await axios.post(`/match-jobs`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         timeout: 30000,
@@ -112,37 +114,27 @@ function App() {
               ["Summary Advice", result.summary_advice],
               ["Jobs You Can Apply For", result.job_roles_you_can_apply_for],
               ["Aspirational Roles", result.job_roles_you_desire],
-              ["Match Percentage", `${result.percentage_match ?? 0}%`],
+              ["Match Percentage", result.percentage_match ? `${result.percentage_match}%` : null],
               ["Strong CV Points", result.cv_strong_points, result.used_cv],
               ["Weak CV Points", result.cv_weak_points, result.used_cv],
               ["CV Suggestions", result.cv_improvement_suggestions, result.used_cv],
               ["Market Trend Advice", result.market_trend_advice],
             ].map(([title, content, show = true], i) =>
-              show && (Array.isArray(content) || typeof content === "string" || typeof content === "number") ? (
+              content && show ? (
                 <div key={i} className="section">
                   <h3>{title}</h3>
                   {Array.isArray(content) ? (
-                    content.length > 0 ? (
-                      <ul>
-                        {content.map((item, idx) => (
-                          <li key={idx}>
-                            {typeof item === "object" && item.name
-                              ? `${item.name} (${item.provider})`
-                              : item}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p style={{ fontStyle: "italic", color: "#888" }}>
-                        No {title.toLowerCase()} identified yet.
-                      </p>
-                    )
-                  ) : content ? (
-                    <p>{content}</p>
+                    <ul>
+                      {content.map((item, idx) => (
+                        <li key={idx}>
+                          {typeof item === "object" && item.name
+                            ? `${item.name} (${item.provider})`
+                            : item}
+                        </li>
+                      ))}
+                    </ul>
                   ) : (
-                    <p style={{ fontStyle: "italic", color: "#888" }}>
-                      No {title.toLowerCase()} provided.
-                    </p>
+                    <p>{content}</p>
                   )}
                 </div>
               ) : null
