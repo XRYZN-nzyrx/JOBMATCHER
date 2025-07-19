@@ -39,7 +39,7 @@ async def analyze_profile(
 
     result = analyze_profile_with_gemini(text_data)
 
-    # ✅ Safe handling of Gemini output
+    
     if result and isinstance(result, dict) and "error" not in result:
         result["used_cv"] = file_used
         return JSONResponse(content=result)
